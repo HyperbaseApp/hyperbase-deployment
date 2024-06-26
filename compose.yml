@@ -1,0 +1,194 @@
+version: '3.8'
+
+services:
+  emqx-node1:
+    image: docker.io/emqx
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    environment:
+    - "EMQX_NODE_NAME=emqx@node1.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]"
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      hyperbase-network:
+        aliases:
+        - node1.emqx.io
+    volumes:
+      - ./volume/emqx-node1-data:/opt/emqx/data:Z
+
+  emqx-node2:
+    image: docker.io/emqx
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    environment:
+    - "EMQX_NODE_NAME=emqx@node2.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]"
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      hyperbase-network:
+        aliases:
+        - node2.emqx.io
+    volumes:
+      - ./volume/emqx-node2-data:/opt/emqx/data:Z
+
+  scylla-node1:
+    image: docker.io/scylladb/scylla:5.4
+    command: --cpuset 0-6 --listen-address 192.168.1.2
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+        ipv4_address: 192.168.1.2
+    ports:
+      - 19042:19042
+    volumes:
+      - ./volume/scylla-node1-data:/var/lib/scylla:Z
+
+  scylla-node2:
+    image: docker.io/scylladb/scylla:5.4
+    command: --cpuset 7-13 --listen-address 192.168.1.3 --seeds 192.168.1.2
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+        ipv4_address: 192.168.1.3
+    ports:
+      - 19043:19042
+    volumes:
+      - ./volume/scylla-node2-data:/var/lib/scylla:Z
+
+  scylla-node3:
+    image: docker.io/scylladb/scylla:5.4
+    command: --cpuset 14-19 --listen-address 192.168.1.4 --seeds 192.168.1.2,192.168.1.3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+        ipv4_address: 192.168.1.4
+    ports:
+      - 19044:19042
+    volumes:
+      - ./volume/scylla-node3-data:/var/lib/scylla:Z
+
+  hyperbase:
+    image: docker.io/mnaufalhilmym/hyperbase
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+    volumes:
+      - ./hyperbase-config.yml:/app/config.yml:R
+      - ./volume/hyperbase-pg-bucket:/app/hyperbase_bucket:Z
+    environment:
+      - RUST_BACKTRACE=1
+    depends_on:
+      - emqx-node1
+      - emqx-node2
+      - scylla-node1
+      - scylla-node2
+      - scylla-node3
+
+  nginx-http:
+    image: docker.io/nginx
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+    ports:
+      - "80:80"
+      - "8083:8083"
+      - "18083:18083"
+    volumes:
+      - ./nginx-http.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - hyperbase
+      - emqx-node1
+      - emqx-node2
+
+  nginx-mqtt:
+    image: docker.io/nginx
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./nginx-mqtt.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - emqx-node1
+      - emqx-node2
+
+  hyperbase-ui:
+    image: docker.io/mnaufalhilmym/hyperbase-ui
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      hyperbase-network:
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nginx-http
+
+
+networks:
+  hyperbase-network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/16
+          gateway: 192.168.1.1

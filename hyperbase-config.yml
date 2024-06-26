@@ -1,0 +1,118 @@
+app:
+  mode: "development" # development or production
+
+log:
+  display_level: true
+  level_filter: "info"
+  db_ttl: 604800 # seconds
+
+hash:
+  argon2:
+    algorithm: "Argon2id"
+    version: "V0x13"
+    salt: "salt"
+
+token:
+  jwt:
+    secret: "secret"
+    expiry_duration: 2629746 # seconds
+
+mailer:
+  smtp_host: "smtp.gmail.com"
+  smtp_username: "username"
+  smtp_password: "password"
+  sender_name: "sender"
+  sender_email: "email@email"
+
+db:
+  option:
+    refresh_change: false
+  scylla:
+    user: "hyperbase"
+    password: "password"
+    host: "192.168.1.2"
+    port: "19042"
+    replication_factor: 3
+    prepared_statement_cache_size: 15511
+  # postgres:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "localhost"
+  #   port: "5432"
+  #   db_name: "hyperbase"
+  #   max_connections: 1000
+  # postgres:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "cloud.hyperbase.in"
+  #   port: "55432"
+  #   db_name: "hyperbase"
+  #   max_connections: 10
+  # postgres:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "103.76.129.93"
+  #   port: "31500"
+  #   db_name: "hyperbase"
+  #   max_connections: 1000
+  # mysql:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "localhost"
+  #   port: "3306"
+  #   db_name: "hyperbase"
+  #   max_connections: 1000
+  # mysql:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "10.42.28.156"
+  #   port: "3306"
+  #   db_name: "hyperbase"
+  #   max_connections: 1000
+  # mysql:
+  #   user: "hyperbase"
+  #   password: "password"
+  #   host: "cloud.hyperbase.in"
+  #   port: "43306"
+  #   db_name: "hyperbase"
+  #   max_connections: 1000
+  # sqlite:
+  #   path: "/run/media/hilmy/b9f73678-727e-4cd4-8969-0ac96536cf74/labs/projects/hyperbase/hyperbase.db"
+  #   max_connections: 1000
+
+bucket:
+  path: "../hyperbase_bucket"
+
+api:
+  # internal:
+  #   gossip:
+  #     host: "localhost"
+  #     port: 7472
+  #     peers:
+  #       - "localhost:7473"
+  #       - "0.0.0.0:7473"
+  #     view_size: 4
+  #     actions_size: 30
+  rest:
+    host: "0.0.0.0"
+    port: 8080
+    allowed_origin: "hyperbase.in"
+  websocket:
+    heartbeat_interval: "5s"
+    client_timeout: "10s"
+  mqtt:
+    # host: "mqtt.hyperbase.in"
+    # port: 51883
+    host: "nginx-mqtt"
+    port: 1883
+    topic: "$queue/hyperbase"
+    username: "hyperbase"
+    password: "password"
+    channel_capacity: 100
+    timeout: "3s"
+
+auth:
+  admin_registration: true
+  access_token_length: 40
+  registration_ttl: 600 # seconds
+  reset_password_ttl: 600 # seconds
