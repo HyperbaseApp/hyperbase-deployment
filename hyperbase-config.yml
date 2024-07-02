@@ -10,68 +10,68 @@ hash:
   argon2:
     algorithm: "Argon2id"
     version: "V0x13"
-    salt: "salt"
+    salt: "QuuHmsAcLFLAyUAuMcivdUSyyUezVQ2vDUwMK2HBJHuzYP2UbUpaeUC5QsRtNxrV"
 
 token:
   jwt:
-    secret: "secret"
+    secret: "XSgpbDF3HscLeRjB8HoNsbKQe6B25ezb89SGP5ByxS8bzAUPx3dFfyHNVCeAcCVJ64ST7ChapdwrQ3x3L66Mi39FkgEBoh6K6fiuvgCWrGdc5iSABpCz7sy5AETiwxAZ"
     expiry_duration: 2629746 # seconds
 
 mailer:
   smtp_host: "smtp.gmail.com"
-  smtp_username: "username"
-  smtp_password: "password"
-  sender_name: "sender"
-  sender_email: "email@email"
+  smtp_username: "hyperbase.baas"
+  smtp_password: "bhdodcurzeyphfcu"
+  sender_name: "Hyperbase"
+  sender_email: "system@hyperbase"
 
 db:
   option:
     refresh_change: false
   scylla:
     user: "hyperbase"
-    password: "password"
+    password: "Ek46noQbGkTPae"
     host: "192.168.1.2"
     port: "19042"
-    replication_factor: 3
+    replication_factor: 1
     prepared_statement_cache_size: 15511
   # postgres:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "Ek46noQbGkTPae"
   #   host: "localhost"
   #   port: "5432"
   #   db_name: "hyperbase"
   #   max_connections: 1000
   # postgres:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "Ek46noQbGkTPae"
   #   host: "cloud.hyperbase.in"
   #   port: "55432"
   #   db_name: "hyperbase"
   #   max_connections: 10
   # postgres:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "YsBzCokk3nRnSs"
   #   host: "103.76.129.93"
   #   port: "31500"
   #   db_name: "hyperbase"
   #   max_connections: 1000
   # mysql:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "Ek46noQbGkTPae"
   #   host: "localhost"
   #   port: "3306"
   #   db_name: "hyperbase"
   #   max_connections: 1000
   # mysql:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "Ek46noQbGkTPae"
   #   host: "10.42.28.156"
   #   port: "3306"
   #   db_name: "hyperbase"
   #   max_connections: 1000
   # mysql:
   #   user: "hyperbase"
-  #   password: "password"
+  #   password: "Ek46noQbGkTPae"
   #   host: "cloud.hyperbase.in"
   #   port: "43306"
   #   db_name: "hyperbase"
@@ -107,7 +107,7 @@ api:
     port: 1883
     topic: "$queue/hyperbase"
     username: "hyperbase"
-    password: "password"
+    password: "57VHmE3nwzpWSB2Akf"
     channel_capacity: 100
     timeout: "3s"
 
